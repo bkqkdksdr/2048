@@ -156,4 +156,5 @@ public class Game2048 extends JFrame {
             game.requestFocusInWindow();
         });
     }
+
 }
