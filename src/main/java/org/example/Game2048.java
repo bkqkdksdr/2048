@@ -9,12 +9,16 @@ import java.awt.event.KeyEvent;
 public class Game2048 extends JFrame {
     private final GameBoard gameBoard;
     private final JLabel scoreLabel;
+    private final JLabel highScoreLabel; // 新增：记录历史最佳成绩的标签
+    private int highScore; // 新增：历史最佳成绩
 
     public Game2048() {
         super("Game 2048 - 5x5");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
 
+        // 加载历史最佳成绩
+        this.highScore = HighScoreManager.loadHighScore();
         // 应用FlatLaf现代UI主题
         try {
             UIManager.setLookAndFeel(new FlatDarkLaf());
@@ -54,8 +58,33 @@ public class Game2048 extends JFrame {
         scorePanel.add(scoreTitle);
         scorePanel.add(scoreLabel);
 
+        // 创建历史最佳成绩面板
+        JPanel highScorePanel = new JPanel();
+        highScorePanel.setBackground(new Color(187, 173, 160));
+        highScorePanel.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+        highScorePanel.setLayout(new BoxLayout(highScorePanel, BoxLayout.Y_AXIS));
+
+        JLabel highScoreTitle = new JLabel("BEST");
+        highScoreTitle.setFont(new Font("Arial", Font.BOLD, 14));
+        highScoreTitle.setForeground(new Color(238, 228, 218));
+        highScoreTitle.setAlignmentX(CENTER_ALIGNMENT);
+
+        highScoreLabel = new JLabel(String.valueOf(highScore));
+        highScoreLabel.setFont(new Font("Arial", Font.BOLD, 22));
+        highScoreLabel.setForeground(Color.WHITE);
+        highScoreLabel.setAlignmentX(CENTER_ALIGNMENT);
+
+        highScorePanel.add(highScoreTitle);
+        highScorePanel.add(highScoreLabel);
+
+        // 创建包含分数面板和历史最佳成绩面板的面板
+        JPanel scoreAndHighScorePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        scoreAndHighScorePanel.setOpaque(false);
+        scoreAndHighScorePanel.add(scorePanel);
+        scoreAndHighScorePanel.add(highScorePanel);
+
         headerPanel.add(titleLabel, BorderLayout.WEST);
-        headerPanel.add(scorePanel, BorderLayout.EAST);
+        headerPanel.add(scoreAndHighScorePanel, BorderLayout.EAST);
 
         // 创建游戏面板
         gameBoard = new GameBoard();
@@ -126,6 +155,12 @@ public class Game2048 extends JFrame {
     private void updateUI() {
         gameBoard.updateBoard();
         scoreLabel.setText(String.valueOf(gameBoard.getScore()));
+        // 更新历史最佳成绩
+        if (gameBoard.getScore() > highScore) {
+            highScore = gameBoard.getScore();
+            highScoreLabel.setText(String.valueOf(highScore));
+            HighScoreManager.saveHighScore(highScore);
+        }
         repaint();
     }
 
