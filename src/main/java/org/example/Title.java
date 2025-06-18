@@ -28,9 +28,10 @@ public class Title extends JLabel {
     private int value;
 
     public Title() {
-        setOpaque(true);
+        setOpaque(false);
         setHorizontalAlignment(SwingConstants.CENTER);
         setVerticalAlignment(SwingConstants.CENTER);
+        setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         setValue(0);
     }
 
@@ -64,5 +65,19 @@ public class Title extends JLabel {
         else font = new Font("Arial", Font.BOLD, 16);
 
         setFont(font);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        Graphics2D g2d = (Graphics2D) g.create();
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        
+        int arcWidth = 10;
+        int arcHeight = 10;
+        g2d.setColor(getBackground());
+        g2d.fillRoundRect(0, 0, getWidth(), getHeight(), arcWidth, arcHeight);
+        
+        g2d.dispose();
+        super.paintComponent(g);
     }
 }
